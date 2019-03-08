@@ -1,5 +1,6 @@
 package com.rest.demo.restdemo.service;
 
+import com.rest.demo.restdemo.exception.UserNotFoundException;
 import com.rest.demo.restdemo.model.User;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +32,17 @@ public class UserService {
     }
 
     public User getUserById(int id){
-        return userList.stream().filter(u -> u.getId() == id).findFirst().orElse(null);
+        return userList.stream().filter(u -> u.getId() == id).findFirst().orElseThrow(() -> new UserNotFoundException("id:" + id) );
+    }
+
+    public boolean deleteById(int id){
+        User userFound = userList.stream().filter(u -> u.getId() == id).findFirst().orElse(null);
+
+        if(userFound == null)
+            throw new UserNotFoundException("id:"+id);
+
+        userList.remove(userFound);
+        return true;
     }
 
 

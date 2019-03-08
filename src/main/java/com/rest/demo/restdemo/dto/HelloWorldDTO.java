@@ -18,7 +18,7 @@ public class HelloWorldDTO {
     @Override
     public String toString() {
         return "HelloWorldDTO{" +
-                "message='" + message + '\'' +
+                "messages='" + message + '\'' +
                 '}';
     }
 }
