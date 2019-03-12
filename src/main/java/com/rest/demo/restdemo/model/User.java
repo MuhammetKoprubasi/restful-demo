@@ -1,6 +1,7 @@
 package com.rest.demo.restdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Past;
@@ -9,6 +10,8 @@ import java.util.Date;
 
 public class User {
 
+    // json ignore means does not include this property in response
+    @JsonIgnore
     private int id;
 
     @Size(min = 2)
