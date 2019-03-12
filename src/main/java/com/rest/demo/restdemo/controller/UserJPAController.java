@@ -1,6 +1,9 @@
 package com.rest.demo.restdemo.controller;
 
+import com.rest.demo.restdemo.exception.UserNotFoundException;
+import com.rest.demo.restdemo.model.Post;
 import com.rest.demo.restdemo.model.User;
+import com.rest.demo.restdemo.repository.PostRepository;
 import com.rest.demo.restdemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -20,6 +23,9 @@ public class UserJPAController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @GetMapping(path = "/jpa/users")
     public List<User> getAllUsers(){
@@ -53,6 +59,32 @@ public class UserJPAController {
         userRepository.deleteById(id);
 
         return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping(path = "/jpa/users/{id}/posts")
+    public List<Post> getPost(@PathVariable int id){
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if(!userOptional.isPresent())
+            throw new UserNotFoundException("id:" + id);
+
+        return userOptional.get().getPost();
+    }
+
+
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> savePost(@PathVariable int id, @RequestBody Post post){
+        Optional<User> userOptional = userRepository.findById(id);
+
+        User user = userOptional.orElseThrow(() -> new UserNotFoundException("id:" + id));
+
+        post.setUser(user);
+
+        Post post1 = postRepository.save(post);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post1.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 
 
